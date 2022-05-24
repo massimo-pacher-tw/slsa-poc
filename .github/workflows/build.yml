@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     outputs:
-      digest: ${{ steps.build_image.outputs.digest }}
+      digest: ${{ steps.hash.outputs.digest }}
     runs-on: ubuntu-latest
     steps:
       - name: Build image
@@ -18,6 +18,16 @@ jobs:
         with:
           push: false
           tags: "docker-hello-world:${{ github.sha }}"
+      - name: Generate hash
+        shell: bash
+        id: hash
+        run: |
+          set -euo pipefail
+          DIGEST="sha256:${{steps.build_image.outputs.digest}} ${{steps.build_image.outputs.imageid}}"
+          DIGEST="${DIGEST//'%'/'%25'}"
+          DIGEST="${DIGEST//$'\n'/'%0A'}"
+          DIGEST="${DIGEST//$'\r'/'%0D'}"
+          echo "::set-output name=digest::$DIGEST"
   provenance:
     needs: [build]
     permissions:
