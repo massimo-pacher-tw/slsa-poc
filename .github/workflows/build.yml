@@ -12,10 +12,14 @@ jobs:
       digest: ${{ steps.hash.outputs.digest }}
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: Build image
         uses: docker/build-push-action@v3
         id: build_image
         with:
+          context: .
           push: false
           tags: "docker-hello-world:${{ github.sha }}"
       - name: Generate hash
@@ -23,7 +27,7 @@ jobs:
         id: hash
         run: |
           set -euo pipefail
-          DIGEST=$(./generate-digest.sh ${{steps.build_image.outputs.digest}} ${{steps.build_image.outputs.imageid}})
+          DIGEST=$(./.github/generate-digest.sh ${{steps.build_image.outputs.digest}} ${{steps.build_image.outputs.imageid}})
           DIGEST="${DIGEST//'%'/'%25'}"
           DIGEST="${DIGEST//$'\n'/'%0A'}"
           DIGEST="${DIGEST//$'\r'/'%0D'}"
