@@ -23,7 +23,7 @@ jobs:
         id: hash
         run: |
           set -euo pipefail
-          DIGEST="sha256:${{steps.build_image.outputs.digest}} ${{steps.build_image.outputs.imageid}}"
+          DIGEST=$(./generate-digest.sh ${{steps.build_image.outputs.digest}} ${{steps.build_image.outputs.imageid}})
           DIGEST="${DIGEST//'%'/'%25'}"
           DIGEST="${DIGEST//$'\n'/'%0A'}"
           DIGEST="${DIGEST//$'\r'/'%0D'}"
