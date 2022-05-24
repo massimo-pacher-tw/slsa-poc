@@ -12,20 +12,12 @@ jobs:
       digest: ${{ steps.build_image.outputs.digest }}
     runs-on: ubuntu-latest
     steps:
-      - name: "Checkout git repo"
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 1
-      - name: Extract SHORT SHA
-        id: vars
-        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
       - name: Build image
         uses: docker/build-push-action@v3
         id: build_image
         with:
-          context: ../..
           push: false
-          tags: "docker-hello-world:${{ steps.vars.outputs.sha_short }}"
+          tags: "docker-hello-world:${GITHUB_SHA}"
   provenance:
     needs: [build]
     permissions:
